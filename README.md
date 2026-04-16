@@ -30,6 +30,7 @@ npm install
 npm start
 ```
 
+- Abre `http://localhost:3000` en tu navegador para usar la interfaz visual.
 - Abre `http://localhost:3000/status` para verificar que el servidor está corriendo.
 
 ## Cómo ejecutar pruebas rápidas

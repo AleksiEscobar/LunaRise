@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LunaRise WhatsApp Control</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header>
+      <h1>LunaRise Control Center</h1>
+      <p>Interfaz web para ver leads, revisar IA, ejecutar workflows y controlar la operación.</p>
+    </header>
+
+    <section class="panel status-panel">
+      <h2>Estado del sistema</h2>
+      <div class="status-grid">
+        <div>
+          <strong>Servidor</strong>
+          <pre id="server-status">Cargando...</pre>
+        </div>
+        <div>
+          <strong>AI</strong>
+          <pre id="ai-status">Cargando...</pre>
+        </div>
+      </div>
+      <button id="refresh-status">Actualizar estado</button>
+    </section>
+
+    <section class="panel workflow-panel">
+      <h2>Guía del workflow</h2>
+      <ol>
+        <li>Escanea el QR de WhatsApp y espera que el estado indique que está listo.</li>
+        <li>Agrega o convierte un lead usando el formulario <strong>Crear / convertir lead</strong>.</li>
+        <li>Consulta los leads en el listado <strong>Leads registrados</strong>.</li>
+        <li>Selecciona un lead y usa <strong>Calificar</strong> o <strong>Notificar</strong>.</li>
+        <li>Envía mensajes directos con <strong>Enviar WhatsApp</strong> o usa los endpoints de IA.</li>
+      </ol>
+    </section>
+
+    <section class="panel forms-panel">
+      <div class="form-column">
+        <h2>Enviar WhatsApp</h2>
+        <label>Número</label>
+        <input id="send-number" placeholder="5215512345678" />
+        <label>Mensaje</label>
+        <textarea id="send-message" rows="4" placeholder="Tu texto aquí..."></textarea>
+        <button id="send-button">Enviar</button>
+      </div>
+
+      <div class="form-column">
+        <h2>Crear / convertir lead</h2>
+        <label>Número</label>
+        <input id="lead-number" placeholder="5215512345678" />
+        <label>Mensaje</label>
+        <textarea id="lead-message" rows="4" placeholder="Texto del lead..."></textarea>
+        <label>Nicho</label>
+        <input id="lead-niche" placeholder="Salud, Marketing, etc." />
+        <button id="convert-lead">Convertir lead</button>
+      </div>
+
+      <div class="form-column">
+        <h2>AI / Market</h2>
+        <label>Número</label>
+        <input id="ai-number" placeholder="5215512345678" />
+        <label>Prompt</label>
+        <textarea id="ai-prompt" rows="4" placeholder="Pregunta a la IA..."></textarea>
+        <div class="button-group">
+          <button id="ai-button">Enviar a IA</button>
+          <button id="market-button">Enviar a Market</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel leads-panel">
+      <h2>Leads registrados</h2>
+      <button id="refresh-leads">Refrescar leads</button>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Número</th>
+              <th>Nicho</th>
+              <th>Estado</th>
+              <th>Fuente</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="leads-table"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel detail-panel">
+      <h2>Detalle / acciones del lead</h2>
+      <div class="detail-grid">
+        <div>
+          <label>ID de lead</label>
+          <input id="detail-id" readonly />
+        </div>
+        <div>
+          <label>Estado</label>
+          <select id="detail-status">
+            <option value="captured">captured</option>
+            <option value="qualified">qualified</option>
+            <option value="replied">replied</option>
+            <option value="contacted">contacted</option>
+            <option value="analyzed">analyzed</option>
+          </select>
+        </div>
+        <div>
+          <label>Metadata JSON</label>
+          <textarea id="detail-metadata" rows="3"></textarea>
+        </div>
+      </div>
+      <div class="button-group">
+        <button id="load-detail">Cargar detalle</button>
+        <button id="patch-detail">Actualizar lead</button>
+        <button id="qualify-lead">Calificar lead</button>
+        <button id="notify-lead">Notificar lead</button>
+      </div>
+    </section>
+
+    <section class="panel logs-panel">
+      <h2>Resultados y logs</h2>
+      <pre id="result-log">Interacciones aparecerán aquí...</pre>
+    </section>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
