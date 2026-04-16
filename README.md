@@ -25,6 +25,20 @@ cd C:\Projects\infraestructura\whatsapp
 npm run test:full
 ```
 
+## Despliegue y repositorio
+- El proyecto está versionado en Git y listo para subir a GitHub.
+- Repo remoto: `https://github.com/AleksiEscobar/LunaRise`
+- Para clonar el proyecto:
+```powershell
+git clone https://github.com/AleksiEscobar/LunaRise.git
+```
+- Para sincronizar cambios locales con GitHub:
+```powershell
+git add .
+git commit -m "Actualización de README y configuración"
+git push
+```
+
 ## Endpoints disponibles
 - `POST /send`
 - `POST /webhook`
