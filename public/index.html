@@ -3,101 +3,129 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LunaRise WhatsApp Control</title>
+  <title>LunaRise Agency Dashboard</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="app-shell">
     <header>
-      <h1>LunaRise Control Center</h1>
-      <p>Interfaz web para ver leads, revisar IA, ejecutar workflows y controlar la operación.</p>
+      <div>
+        <h1>LunaRise Agency Dashboard</h1>
+        <p>Control total del flujo de leads, IA, calificación y notificaciones desde una sola pantalla.</p>
+      </div>
+      <div class="header-actions">
+        <button id="refresh-status">Actualizar estado</button>
+        <button id="refresh-leads">Refrescar leads</button>
+      </div>
     </header>
 
-    <section class="panel status-panel">
-      <h2>Estado del sistema</h2>
-      <div class="status-grid">
-        <div>
-          <strong>Servidor</strong>
-          <pre id="server-status">Cargando...</pre>
-        </div>
-        <div>
-          <strong>AI</strong>
-          <pre id="ai-status">Cargando...</pre>
-        </div>
+    <section class="panel overview-panel">
+      <div class="overview-card">
+        <h2>Estado del servidor</h2>
+        <pre id="server-status">Cargando...</pre>
       </div>
-      <button id="refresh-status">Actualizar estado</button>
+      <div class="overview-card">
+        <h2>Estado de IA</h2>
+        <pre id="ai-status">Cargando...</pre>
+      </div>
+      <div class="overview-card">
+        <h2>Resumen operativo</h2>
+        <ul>
+          <li>Leads totales: <span id="leads-count">0</span></li>
+          <li>Último lead seleccionado: <span id="selected-lead">ninguno</span></li>
+          <li>Última acción: <span id="last-action">ninguna</span></li>
+        </ul>
+      </div>
     </section>
 
     <section class="panel workflow-panel">
-      <h2>Guía del workflow</h2>
-      <ol>
-        <li>Escanea el QR de WhatsApp y espera que el estado indique que está listo.</li>
-        <li>Agrega o convierte un lead usando el formulario <strong>Crear / convertir lead</strong>.</li>
-        <li>Consulta los leads en el listado <strong>Leads registrados</strong>.</li>
-        <li>Selecciona un lead y usa <strong>Calificar</strong> o <strong>Notificar</strong>.</li>
-        <li>Envía mensajes directos con <strong>Enviar WhatsApp</strong> o usa los endpoints de IA.</li>
-      </ol>
+      <h2>Flujo de agencia</h2>
+      <div class="workflow-cards">
+        <article>
+          <h3>Paso 1</h3>
+          <p>Registrar o convertir un lead entrante.</p>
+          <button id="convert-lead">Convertir lead</button>
+        </article>
+        <article>
+          <h3>Paso 2</h3>
+          <p>Calificar el lead y generar el análisis automático.</p>
+          <button id="qualify-lead">Calificar lead</button>
+        </article>
+        <article>
+          <h3>Paso 3</h3>
+          <p>Notificar al sistema / n8n que el lead ha avanzado.</p>
+          <button id="notify-lead">Notificar lead</button>
+        </article>
+        <article>
+          <h3>Paso 4</h3>
+          <p>Enviar un mensaje directo desde WhatsApp.</p>
+          <button id="send-button">Enviar WhatsApp</button>
+        </article>
+      </div>
     </section>
 
-    <section class="panel forms-panel">
-      <div class="form-column">
-        <h2>Enviar WhatsApp</h2>
-        <label>Número</label>
-        <input id="send-number" placeholder="5215512345678" />
-        <label>Mensaje</label>
-        <textarea id="send-message" rows="4" placeholder="Tu texto aquí..."></textarea>
-        <button id="send-button">Enviar</button>
-      </div>
+    <section class="panel split-panel">
+      <div class="left-column">
+        <div class="panel action-panel">
+          <h2>Control rápido</h2>
+          <div class="form-group">
+            <label>Lead / número</label>
+            <input id="lead-number" placeholder="5215512345678" />
+          </div>
+          <div class="form-group">
+            <label>Mensaje / Lead text</label>
+            <textarea id="lead-message" rows="4" placeholder="Texto del lead..." ></textarea>
+          </div>
+          <div class="form-group">
+            <label>Nicho</label>
+            <input id="lead-niche" placeholder="Salud, Marketing..." />
+          </div>
+          <button id="create-lead">Crear nuevo lead</button>
+        </div>
 
-      <div class="form-column">
-        <h2>Crear / convertir lead</h2>
-        <label>Número</label>
-        <input id="lead-number" placeholder="5215512345678" />
-        <label>Mensaje</label>
-        <textarea id="lead-message" rows="4" placeholder="Texto del lead..."></textarea>
-        <label>Nicho</label>
-        <input id="lead-niche" placeholder="Salud, Marketing, etc." />
-        <button id="convert-lead">Convertir lead</button>
-      </div>
-
-      <div class="form-column">
-        <h2>AI / Market</h2>
-        <label>Número</label>
-        <input id="ai-number" placeholder="5215512345678" />
-        <label>Prompt</label>
-        <textarea id="ai-prompt" rows="4" placeholder="Pregunta a la IA..."></textarea>
-        <div class="button-group">
-          <button id="ai-button">Enviar a IA</button>
-          <button id="market-button">Enviar a Market</button>
+        <div class="panel action-panel">
+          <h2>IA y mensajería</h2>
+          <div class="form-group">
+            <label>Número destino</label>
+            <input id="send-number" placeholder="5215512345678" />
+          </div>
+          <div class="form-group">
+            <label>Texto de WhatsApp</label>
+            <textarea id="send-message" rows="4" placeholder="Mensaje directo..." ></textarea>
+          </div>
+          <button id="send-button-duplicate">Enviar WhatsApp</button>
         </div>
       </div>
-    </section>
 
-    <section class="panel leads-panel">
-      <h2>Leads registrados</h2>
-      <button id="refresh-leads">Refrescar leads</button>
-      <div class="table-wrapper">
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Número</th>
-              <th>Nicho</th>
-              <th>Estado</th>
-              <th>Fuente</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody id="leads-table"></tbody>
-        </table>
+      <div class="right-column">
+        <div class="panel leads-panel">
+          <h2>Leads registrados</h2>
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Número</th>
+                <th>Estado</th>
+                <th>Nicho</th>
+                <th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="leads-table"></tbody>
+          </table>
+        </div>
       </div>
     </section>
 
     <section class="panel detail-panel">
-      <h2>Detalle / acciones del lead</h2>
+      <div class="detail-header">
+        <div>
+          <h2>Detalle del lead seleccionado</h2>
+          <p>Abre y actúa en cada lead con calificación, notificación y edición.</p>
+        </div>
+      </div>
       <div class="detail-grid">
         <div>
-          <label>ID de lead</label>
+          <label>ID de Lead</label>
           <input id="detail-id" readonly />
         </div>
         <div>
@@ -111,21 +139,32 @@
           </select>
         </div>
         <div>
-          <label>Metadata JSON</label>
-          <textarea id="detail-metadata" rows="3"></textarea>
+          <label>Metadata</label>
+          <textarea id="detail-metadata" rows="4"></textarea>
         </div>
       </div>
       <div class="button-group">
         <button id="load-detail">Cargar detalle</button>
         <button id="patch-detail">Actualizar lead</button>
-        <button id="qualify-lead">Calificar lead</button>
-        <button id="notify-lead">Notificar lead</button>
+        <button id="qualify-lead-detail">Calificar este lead</button>
+        <button id="notify-lead-detail">Notificar este lead</button>
       </div>
     </section>
 
-    <section class="panel logs-panel">
-      <h2>Resultados y logs</h2>
-      <pre id="result-log">Interacciones aparecerán aquí...</pre>
+    <section class="panel output-panel">
+      <div class="output-columns">
+        <div>
+          <h2>Generables</h2>
+          <label>Análisis / AI</label>
+          <textarea id="generated-analysis" rows="8" readonly></textarea>
+          <label>Respuesta de IA</label>
+          <textarea id="generated-response" rows="8" readonly></textarea>
+        </div>
+        <div>
+          <h2>Registro de operaciones</h2>
+          <pre id="result-log">Aquí aparecerán las operaciones, acciones y resultados del workflow.</pre>
+        </div>
+      </div>
     </section>
   </div>
   <script src="app.js"></script>
