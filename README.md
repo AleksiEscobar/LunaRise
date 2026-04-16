@@ -5,6 +5,22 @@
 - `npm install` en `C:\Projects\infraestructura\whatsapp`
 - `GOOGLE_API_KEY` configurada en el entorno si usas el backup Gemini
 - n8n disponible en `http://localhost:5678` (docker-compose)
+- Copia `.env.example` a `.env` y ajusta las variables según tu entorno
+
+## Configuración de entorno
+Usa `.env` para definir los valores que necesita el servicio.
+Ejemplo mínimo:
+```env
+PORT=3000
+GOOGLE_API_KEY=tu_api_key
+N8N_WEBHOOK_URL=http://localhost:5678/webhook/lead
+WHATSAPP_LEAD_WEBHOOK_URL=http://localhost:3000/n8n/webhook/lead
+```
+
+- `PORT`: puerto donde se ejecuta el servidor.
+- `GOOGLE_API_KEY`: clave para usar Gemini como backup de AI.
+- `N8N_WEBHOOK_URL`: webhook de n8n; si `localhost:5678` no está disponible, el servidor usa un fallback interno.
+- `WHATSAPP_LEAD_WEBHOOK_URL`: endpoint local de fallback para pruebas sin n8n.
 
 ## Cómo iniciar el servidor WhatsApp
 ```powershell
