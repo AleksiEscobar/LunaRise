@@ -1,0 +1,245 @@
+{
+  "name": "Lead Qualification WhatsApp Bot",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {
+        "path": "lead-qualification",
+        "httpMethod": "POST",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "name": "LeadWebhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [250, 300]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "niche",
+              "value": "={{$json[\"niche\"]}}"
+            },
+            {
+              "name": "message",
+              "value": "={{$json[\"message\"]}}"
+            },
+            {
+              "name": "prompt",
+              "value": "=Eres un bot de calificación de leads especializado en nichos de Salud, Finanzas y Productividad.\nRecibe este mensaje de un posible cliente y responde con:\n1) Clasificación: Alto, Medio o Bajo interés.\n2) Tres razones clave de por qué es un lead calificado.\n3) Sugerencia de siguiente paso breve.\n\nMensaje:\n{{$json[\"message\"]}}\nNicho: {{$json[\"niche\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Build Prompt",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:11434/api/generate",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "continueOnFail": true
+        },
+        "bodyParametersJson": "={\"model\":\"qwen2.5-coder:7b\",\"prompt\":\"{{$node[\"Build Prompt\"].json[\"prompt\"]}}\",\"stream\":false}"
+      },
+      "name": "Ollama Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [750, 300],
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "functionCode": "const item = items[0];\nconst json = item.json;\nconst prompt = $node[\"Build Prompt\"].json[\"prompt\"];\nconst number = json.number || $json.number;\nconst responseText = json.response || json.text || json.choices?.[0]?.text || json.output?.[0]?.content?.[0]?.text || null;\n\nif (item.error || !responseText) {\n  return [[], [{\n    number: number,\n    prompt: prompt,\n    originalData: json\n  }]];\n}\n\nreturn [[{\n  number: number,\n  replyText: `Lead calificado:\n${responseText}`\n}], []];"
+      },
+      "name": "Detect Ollama Result",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1000, 300]
+    },
+    {
+      "parameters": {
+        "url": "=https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={{$env.GOOGLE_API_KEY}}",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\"contents\":[{\"parts\":[{\"text\":\"{{$node[\\\"Build Prompt\\\"].json[\\\"prompt\\\"]}}\"}]}]}"
+      },
+      "name": "Gemini Backup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1000, 500]
+    },
+    {
+      "parameters": {
+        "functionCode": "const item = items[0];\nconst json = item.json;\nconst responseText = json.response || json.candidates?.[0]?.content?.parts?.[0]?.text || json.output?.[0]?.content?.[0]?.text || json.choices?.[0]?.message?.content || null;\nconst number = json.number || $json.number;\nconst prompt = $node[\"Build Prompt\"].json[\"prompt\"];\nif (item.error || !responseText) {\n  return [[], [{\n    number: number,\n    prompt: prompt,\n    originalData: json\n  }]];\n}\nreturn [[{\n  number: number,\n  replyText: `Lead calificado:\n${responseText}`\n}], []];"
+      },
+      "name": "Detect Gemini Result",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [1250, 500]
+    },
+    {
+      "parameters": {
+        "url": "={{$env.OPENROUTER_URL}}",
+        "method": "POST",
+        "jsonParameters": true,
+        "options": {
+          "continueOnFail": true
+        },
+        "headers": {
+          "Authorization": "Bearer {{$env.OPENROUTER_API_KEY}}",
+          "Content-Type": "application/json"
+        },
+        "bodyParametersJson": "={\"model\":\"{{$env.OPENROUTER_MODEL}}\",\"messages\":[{\"role\":\"user\",\"content\":\"{{$node[\\\"Build Prompt\\\"].json[\\\"prompt\\\"]}}\"}],\"temperature\":0.7}"
+      },
+      "name": "OpenRouter Backup",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1450, 500]
+    },
+    {
+      "parameters": {
+        "values": {
+          "string": [
+            {
+              "name": "replyText",
+              "value": "=Lead calificado:\n{{$json[\"response\"] || $json[\"candidates\"]?.[0]?.content?.parts?.[0]?.text || $json[\"choices\"]?.[0]?.message?.content || $json[\"output\"]?.[0]?.content?.[0]?.text || JSON.stringify($json)}}"
+            },
+            {
+              "name": "number",
+              "value": "={{$json[\"number\"]}}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Build WhatsApp Payload",
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 1,
+      "position": [1250, 300]
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/webhook",
+        "method": "POST",
+        "jsonParameters": true,
+        "bodyParametersJson": "={\"action\":\"send\",\"number\":\"{{$json[\"number\"]}}\",\"text\":\"{{$json[\"replyText\"]}}\"}"
+      },
+      "name": "Send WhatsApp Reply",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [1500, 300]
+    }
+  ],
+  "connections": {
+    "LeadWebhook": {
+      "main": [
+        [
+          {
+            "node": "Build Prompt",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build Prompt": {
+      "main": [
+        [
+          {
+            "node": "Ollama Request",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Ollama Request": {
+      "main": [
+        [
+          {
+            "node": "Detect Ollama Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Ollama Result": {
+      "main": [
+        [
+          {
+            "node": "Build WhatsApp Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Gemini Backup",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Gemini Backup": {
+      "main": [
+        [
+          {
+            "node": "Detect Gemini Result",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Detect Gemini Result": {
+      "main": [
+        [
+          {
+            "node": "Build WhatsApp Payload",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "OpenRouter Backup",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenRouter Backup": {
+      "main": [
+        [
+          {
+            "node": "Build WhatsApp Payload",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Build WhatsApp Payload": {
+      "main": [
+        [
+          {
+            "node": "Send WhatsApp Reply",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

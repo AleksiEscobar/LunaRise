@@ -1,0 +1,24 @@
+{
+  "name": "whatsapp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "node test_api.js",
+    "test:api": "node test_api.js",
+    "test:full": "node test_full.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.7.3",
+    "dotenv": "^16.6.1",
+    "express": "^5.2.1",
+    "qrcode-terminal": "^0.12.0",
+    "sqlite3": "^6.0.1",
+    "whatsapp-web.js": "^1.34.6"
+  }
+}
