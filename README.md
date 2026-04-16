@@ -25,9 +25,12 @@ WHATSAPP_LEAD_WEBHOOK_URL=http://localhost:3000/n8n/webhook/lead
 ## Cómo iniciar el servidor WhatsApp
 ```powershell
 cd C:\Projects\infraestructura\whatsapp
+copy .env.example .env
 npm install
 npm start
 ```
+
+- Abre `http://localhost:3000/status` para verificar que el servidor está corriendo.
 
 ## Cómo ejecutar pruebas rápidas
 ```powershell
